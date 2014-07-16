@@ -1,0 +1,135 @@
+<html>
+  <head>
+    <title>Heap Viz</title>
+    <script src="jquery.min.js"></script>
+    <style>
+      line.link {
+        fill: none;
+        stroke: #666;
+        stroke-width: 1.5px;
+      }
+
+      circle {
+        fill: #fff;
+        stroke: #0c0;
+        stroke-width: 1px;
+      }
+
+      text {
+        fill: #000;
+        font: 10px sans-serif;
+        pointer-events: none;
+      }
+    </style>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+  </head>
+  <body>
+  </body>
+
+  <script>
+  //Bunch of gross JS kludged together until I clean it up
+  $(function ()  {
+    var socket = new WebSocket('ws://localhost:8080');
+
+
+    socket.onopen = function(event) {
+      console.log('Connected to Heap Viz at', event.target.url)
+    };
+
+    socket.onerror = function(error) {
+      console.warn('WebSocket Error: ' , error);
+    };
+
+    socket.onmessage = function(event) {
+      render(JSON.parse(event.data));
+    };
+
+    function heapGraph(objs) {
+      var nodes = {};
+      var links = []
+      objs.forEach(function(o) {
+        nodes[o.oid] = o;
+      });
+      objs.forEach(function(o) {
+        if (o.references.length) {
+          o.references.forEach(function (ref) {
+            links.push({source:nodes[ref.oid], target:o})
+          });
+        }
+      });
+      // debugger;
+      return {nodes:objs, links:links};
+    }
+
+    var width = 960,
+        height = 500;
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+    var links = svg.append("g");
+    var nodes = svg.append("g");
+    var labels = svg.append("g");
+
+    var first = true;
+    function render(objs) {
+      if (!objs.length) return;
+
+      var graphData = heapGraph(objs)
+      var color = d3.scale.category20();
+
+      var force = d3.layout.force()
+          .charge(-500)
+          .linkDistance(200)
+          .size([width, height]);
+
+
+      force
+          .nodes(graphData.nodes)
+          .links(graphData.links)
+          .start();
+
+      var link = links.selectAll(".link")
+          .data(graphData.links)//, function(d) { return d.source.id + "-" + d.target.id; });
+      link.enter()
+          .append("line")
+          .attr("class", "link")
+          // .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+      link.exit().remove()
+
+      var node = nodes.selectAll(".node")
+          .data(graphData.nodes)//, function(d) { return d.oid });
+      node.enter().append("circle")
+          .attr("class", "node")
+          .attr("r", 40)
+          // .style("fill", function(d) { return color(d.group); })
+          .call(force.drag);
+      node.exit().remove()
+
+
+      force.start()
+
+      var label = labels.selectAll("text").data(graphData.nodes, function (d) { return d.oid })
+      label.enter().append("text")
+        .text(function (d) { return d.klass + " " + d.oid.toString(16)});
+
+      label.exit().remove();
+      node.append("title")
+          .text(function(d) { return d.name; });
+
+      force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+
+        label.attr("x", function(d) { return d.x - 40; })
+             .attr("y", function(d) { return d.y + 7; });
+      });
+      first = false;
+    }
+  });
+  </script>
+</html>
