@@ -100,8 +100,8 @@ HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels)
     nodes.attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; });
 
-    labels.attr("x", function(d) { return d.x - radius; })
-      .attr("y", function(d) { return d.y + 7; });
+    labels.attr("x", function(d) { return d.x; })
+      .attr("y", function(d) { return d.y; });
   });
 }
 HeapVisualization.nodes = function (nodeGroup, graphData, force, radius) {
@@ -132,9 +132,10 @@ HeapVisualization.labels = function (labelGroup, graphData) {
   var label = labelGroup.selectAll("text")
     .data(graphData.nodes, function (d) { return d.oid })
   label.enter()
-    .append("text");
+    .append("text")
+      .attr("text-anchor", "middle")
   label
-    .text(function (d) { return d.names[0] + "|" +d.klass + " " + d.oid.toString(16)});
+    .text(function (d) { return d.klass + "#" + d.oid.toString(16).substring(7)});
   label.exit()
     .remove();
   return label;
