@@ -1,22 +1,38 @@
 function HeapVisualization() {
   //Public graph properties
-  this.data = $R.state();
+  this.objData = $R.state();
   this.radius = $R.state(40);
   this.width = $R.state(960);
   this.height = $R.state(500);
 
   //Connect it up
-  var graphData = $R(HeapVisualization.graphData).bindTo(this.data);
+  var nodeData = $R(HeapVisualization.nodeData).bindTo(this.objData);
+  var linkData = $R(HeapVisualization.linkData).bindTo(this.objData);
+  var variableTable = $R(HeapVisualization.variableTable).bindTo(this.objData);
+  var vizData = $R(HeapVisualization.vizData).bindTo(nodeData, linkData, variableTable);
   var svg = $R(HeapVisualization.svg).bindTo(this.width, this.height);
+
   var linkGroup = $R(HeapVisualization.linkGroup).bindTo(svg);
   var nodeGroup = $R(HeapVisualization.nodeGroup).bindTo(svg);
   var labelGroup = $R(HeapVisualization.labelGroup).bindTo(svg);
+  var varLinkGroup = $R(HeapVisualization.varLinkGroup).bindTo(svg);
+  var varLinkLabelGroup = $R(HeapVisualization.varLinkLabelGroup).bindTo(svg);
+
   var force = $R(HeapVisualization.force).bindTo(this.width, this.height, this.radius);
-  var forceState = $R(HeapVisualization.forceState).bindTo(force, graphData);
-  var nodes = $R(HeapVisualization.nodes).bindTo(nodeGroup, graphData, force, this.radius);
-  var links = $R(HeapVisualization.links).bindTo(linkGroup, graphData);
-  var labels = $R(HeapVisualization.labels).bindTo(labelGroup, graphData);
-  var nextForceTick = $R(HeapVisualization.nextForceTick).bindTo(force, this.radius, links, nodes, labels)
+  var forceState = $R(HeapVisualization.forceState).bindTo(force, vizData);
+
+  var nodes = $R(HeapVisualization.nodes).bindTo(nodeGroup, vizData, force, this.radius);
+  var links = $R(HeapVisualization.links).bindTo(linkGroup, vizData);
+  var labels = $R(HeapVisualization.labels).bindTo(labelGroup, vizData);
+  var varLinks = $R(HeapVisualization.varLinks).bindTo(varLinkGroup, vizData);
+  var varLinkLabels = $R(HeapVisualization.varLinkLabels).bindTo(varLinkLabelGroup, vizData);
+
+  var nextForceTick = $R(HeapVisualization.nextForceTick).bindTo(force, this.radius, links, nodes, labels, varLinks)
+}
+HeapVisualization.colors = d3.scale.category10();
+
+HeapVisualization.hexifyOid = function (oid) {
+  return "0x"+oid.toString(16).substring(7);
 }
 HeapVisualization.scaleLinkTarget = function (link, r) {
   var dx = link.target.x - link.source.x;
@@ -26,18 +42,34 @@ HeapVisualization.scaleLinkTarget = function (link, r) {
   dy = (dy / l) * (l - r)
   return {x:link.source.x + dx, y:link.source.y + dy};
 }
-HeapVisualization.graphData = function (data) {
+HeapVisualization.nodeData = function (objData) {
+  objData.forEach(function (obj, i) {
+    obj.color = HeapVisualization.colors(i);
+  });
+  return objData;
+}
+HeapVisualization.linkData = function (objData) {
   var nodeMap = {};
   var links = []
-  data.forEach(function(obj) { nodeMap[obj.oid] = obj });
+  objData.forEach(function(obj) { nodeMap[obj.oid] = obj });
 
-  links = links.concat.apply(links, data.map(function (obj) {
+  return links.concat.apply(links, objData.map(function (obj) {
     return obj.references.map(function (ref) {
       return {source:nodeMap[ref.oid], target:obj};
     });
   }));
-
-  return {nodes:data, links:links};
+}
+HeapVisualization.variableTable = function (objData) {
+  var vars = [];
+  objData.forEach(function (obj) {
+    vars = vars.concat(obj.names.map(function (name) {
+      return {name:name, oid:obj.oid, obj:obj};
+    }));
+  });
+  return vars;
+}
+HeapVisualization.vizData = function (nodeData, linkData, variableTable) {
+  return {nodes:nodeData, links:linkData, variables: variableTable};
 }
 HeapVisualization.svg = function (width, height) {
   var svg = d3.select("body").append("svg")
@@ -45,6 +77,8 @@ HeapVisualization.svg = function (width, height) {
     .attr("height", height);
 
   //Specific ordering for z-index
+  svg.append("g").attr("class", "sym-links");
+  svg.append("g").attr("class", "sym-link-labels");
   svg.append("g").attr("class", "links");
   svg.append("g").attr("class", "nodes");
   svg.append("g").attr("class", "labels");
@@ -73,7 +107,12 @@ HeapVisualization.linkGroup = function (svg) {
 HeapVisualization.labelGroup = function (svg) {
   return svg.select(".labels");
 }
-
+HeapVisualization.varLinkGroup = function (svg) {
+  return svg.select(".sym-links");
+}
+HeapVisualization.varLinkLabelGroup = function (svg) {
+  return svg.select(".sym-link-labels");
+}
 HeapVisualization.force = function (width, height, radius) {
   var force = d3.layout.force()
     .friction(0.5)
@@ -83,13 +122,13 @@ HeapVisualization.force = function (width, height, radius) {
     .size([width, height]);
   return force;
 }
-HeapVisualization.forceState = function (force, graphData) {
+HeapVisualization.forceState = function (force, vizData) {
   force
-    .nodes(graphData.nodes)
-    .links(graphData.links)
+    .nodes(vizData.nodes)
+    .links(vizData.links)
     .start();
 }
-HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels) {
+HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels, varLinks) {
   force.on("tick", function() {
     links
       .attr("x1", function(d) { return d.source.x; })
@@ -102,15 +141,26 @@ HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels)
 
     labels.attr("x", function(d) { return d.x; })
       .attr("y", function(d) { return d.y; });
+
+    var diag = d3.svg.diagonal()
+      .projection(function (d) {return [d.y, d.x]})
+      .source(function (d,i) { return {x:10+(i*20), y:110} })
+      .target(function (d,i) {
+        var l = {source:{x:10+(i*20), y:110}, target:{x:d.obj.y, y:d.obj.x}};
+        var scaledL = HeapVisualization.scaleLinkTarget(l, radius);
+        return {x:scaledL.x, y:scaledL.y}
+      })
+    varLinks.attr("d", diag);
   });
 }
-HeapVisualization.nodes = function (nodeGroup, graphData, force, radius) {
+HeapVisualization.nodes = function (nodeGroup, vizData, force, radius) {
   var node = nodeGroup
     .selectAll(".node")
-    .data(graphData.nodes, function(d) { return d.oid });
+    .data(vizData.nodes, function(d) { return d.oid });
   node.enter()
     .append("circle")
     .attr("class", "node")
+    .style("stroke", function (d,i) { return d.color })
   node
     .attr("r", radius)
     .call(force.drag);
@@ -118,8 +168,8 @@ HeapVisualization.nodes = function (nodeGroup, graphData, force, radius) {
     .remove()
   return node;
 }
-HeapVisualization.links = function (linkGroup, graphData) {
-  var link = linkGroup.selectAll(".link").data(graphData.links);
+HeapVisualization.links = function (linkGroup, vizData) {
+  var link = linkGroup.selectAll(".link").data(vizData.links);
   link.enter()
     .append("line")
     .attr("class", "link")
@@ -128,15 +178,39 @@ HeapVisualization.links = function (linkGroup, graphData) {
     .remove()
   return link;
 }
-HeapVisualization.labels = function (labelGroup, graphData) {
+HeapVisualization.labels = function (labelGroup, vizData) {
   var label = labelGroup.selectAll("text")
-    .data(graphData.nodes, function (d) { return d.oid })
+    .data(vizData.nodes, function (d) { return d.oid })
   label.enter()
     .append("text")
       .attr("text-anchor", "middle")
   label
-    .text(function (d) { return d.klass + "#" + d.oid.toString(16).substring(7)});
+    .text(function (d) { return d.klass + "#" + HeapVisualization.hexifyOid(d.oid)});
   label.exit()
     .remove();
   return label;
+}
+HeapVisualization.varLinks = function (varLinkGroup, vizData) {
+  var varLinks = varLinkGroup.selectAll("path").data(vizData.variables);
+  varLinks.enter()
+    .append("path")
+    .style("stroke", function (d,i) { return d.obj.color })
+  varLinks.exit()
+    .remove()
+  return varLinks;
+}
+HeapVisualization.varLinkLabels = function (varLinkLabelGroup, vizData) {
+  var varLinkLabels = varLinkLabelGroup.selectAll("text").data(vizData.variables, function (d) { return d.name});
+  varLinkLabels.enter()
+    .append("text")
+      .text(function (d) { return d.name + ": " + HeapVisualization.hexifyOid(d.oid) })
+      .style("fill", function (d,i) { console.log(JSON.stringify(d.obj)); return d.obj.color })
+
+  varLinkLabels
+    .attr("x", 10)
+    .attr("y", function (d,i) { return 10 + (i * 20) })
+
+  varLinkLabels.exit()
+    .remove()
+  return varLinkLabels;
 }

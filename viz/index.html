@@ -12,11 +12,11 @@
 
   <script>
   $(function ()  {
-    var viz = new HeapVisualization();
+    window.viz = new HeapVisualization();
     var socket = new WebSocket('ws://localhost:8080');
 
     socket.onmessage = function(event) {
-      viz.data(JSON.parse(event.data));
+      viz.objData(JSON.parse(event.data));
     };
     socket.onopen = function(event) {
       console.log('Connected to Heap Viz at', event.target.url)

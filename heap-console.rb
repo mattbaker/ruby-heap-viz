@@ -44,6 +44,7 @@ puts "Heap Console Ready."
 
 if ARGV[0] == "example"
   @greeting = Example::String.new("Hello")
+  @english_greeting = @greeting
   @greetings = Example::Array.new
   @greetings << @greeting
   @greetings << Example::String.new("Hola")

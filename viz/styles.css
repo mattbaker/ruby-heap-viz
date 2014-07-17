@@ -16,3 +16,9 @@ text {
   pointer-events: none;
   dominant-baseline: middle;
 }
+
+.sym-links path {
+  fill:none;
+  stroke-with: 1px;
+  stroke: #00c;
+}
