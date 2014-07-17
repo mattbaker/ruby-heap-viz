@@ -1,0 +1,17 @@
+line.link {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+circle {
+  fill: #fff;
+  stroke: #0c0;
+  stroke-width: 1px;
+}
+
+text {
+  fill: #000;
+  font: 10px sans-serif;
+  pointer-events: none;
+}
