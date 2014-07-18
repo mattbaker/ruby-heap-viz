@@ -44,6 +44,10 @@ HeapVisualization.scaleLinkTarget = function (link, r) {
   dy = (dy / l) * (l - r)
   return {x:link.source.x + dx, y:link.source.y + dy};
 }
+HeapVisualization.varLinkOrigin = function (i) {
+  //TODO(matt): should calculate this off the bounding box of the table element
+  return {x:44+(i*28), y:228}
+}
 HeapVisualization.nodeData = function (objData) {
   objData.forEach(function (obj, i) {
     obj.color = HeapVisualization.colors(i);
@@ -146,10 +150,13 @@ HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels,
 
     var diag = d3.svg.diagonal()
       .projection(function (d) {return [d.y, d.x]})
-      .source(function (d,i) { return {x:43+(i*28), y:228} })
+      .source(function (d,i) { return HeapVisualization.varLinkOrigin(i) })
       .target(function (d,i) {
-        var l = {source:{x:43+(i*28), y:228}, target:{x:d.obj.y, y:d.obj.x}};
-        var scaledL = HeapVisualization.scaleLinkTarget(l, radius);
+        var link = {
+          source: HeapVisualization.varLinkOrigin(i),
+          target: {x:d.obj.y, y:d.obj.x}
+        };
+        var scaledL = HeapVisualization.scaleLinkTarget(link, radius);
         return {x:scaledL.x, y:scaledL.y}
       })
     varLinks.attr("d", diag);
