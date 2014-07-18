@@ -10,13 +10,16 @@ function HeapVisualization() {
   var linkData = $R(HeapVisualization.linkData).bindTo(this.objData);
   var variableTable = $R(HeapVisualization.variableTable).bindTo(this.objData);
   var vizData = $R(HeapVisualization.vizData).bindTo(nodeData, linkData, variableTable);
+
   var svg = $R(HeapVisualization.svg).bindTo(this.width, this.height);
 
   var linkGroup = $R(HeapVisualization.linkGroup).bindTo(svg);
   var nodeGroup = $R(HeapVisualization.nodeGroup).bindTo(svg);
   var labelGroup = $R(HeapVisualization.labelGroup).bindTo(svg);
   var varLinkGroup = $R(HeapVisualization.varLinkGroup).bindTo(svg);
-  var varLinkLabelGroup = $R(HeapVisualization.varLinkLabelGroup).bindTo(svg);
+
+  var varTable = $R(HeapVisualization.varTable);
+  var varTableRows = $R(HeapVisualization.varTableRows).bindTo(varTable, vizData);
 
   var force = $R(HeapVisualization.force).bindTo(this.width, this.height, this.radius);
   var forceState = $R(HeapVisualization.forceState).bindTo(force, vizData);
@@ -25,7 +28,6 @@ function HeapVisualization() {
   var links = $R(HeapVisualization.links).bindTo(linkGroup, vizData);
   var labels = $R(HeapVisualization.labels).bindTo(labelGroup, vizData);
   var varLinks = $R(HeapVisualization.varLinks).bindTo(varLinkGroup, vizData);
-  var varLinkLabels = $R(HeapVisualization.varLinkLabels).bindTo(varLinkLabelGroup, vizData);
 
   var nextForceTick = $R(HeapVisualization.nextForceTick).bindTo(force, this.radius, links, nodes, labels, varLinks)
 }
@@ -98,6 +100,9 @@ HeapVisualization.svg = function (width, height) {
 
   return svg;
 }
+HeapVisualization.varTable = function () {
+  return d3.select("#var-table tbody");
+}
 HeapVisualization.nodeGroup = function (svg) {
   return svg.select(".nodes");
 }
@@ -109,9 +114,6 @@ HeapVisualization.labelGroup = function (svg) {
 }
 HeapVisualization.varLinkGroup = function (svg) {
   return svg.select(".sym-links");
-}
-HeapVisualization.varLinkLabelGroup = function (svg) {
-  return svg.select(".sym-link-labels");
 }
 HeapVisualization.force = function (width, height, radius) {
   var force = d3.layout.force()
@@ -144,9 +146,9 @@ HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels,
 
     var diag = d3.svg.diagonal()
       .projection(function (d) {return [d.y, d.x]})
-      .source(function (d,i) { return {x:10+(i*20), y:110} })
+      .source(function (d,i) { return {x:43+(i*28), y:228} })
       .target(function (d,i) {
-        var l = {source:{x:10+(i*20), y:110}, target:{x:d.obj.y, y:d.obj.x}};
+        var l = {source:{x:43+(i*28), y:228}, target:{x:d.obj.y, y:d.obj.x}};
         var scaledL = HeapVisualization.scaleLinkTarget(l, radius);
         return {x:scaledL.x, y:scaledL.y}
       })
@@ -191,26 +193,44 @@ HeapVisualization.labels = function (labelGroup, vizData) {
   return label;
 }
 HeapVisualization.varLinks = function (varLinkGroup, vizData) {
-  var varLinks = varLinkGroup.selectAll("path").data(vizData.variables);
+  var varLinks = varLinkGroup.selectAll("path")
+    .data(vizData.variables,function (d) { return d.name });
   varLinks.enter()
     .append("path")
+
+  varLinks
     .style("stroke", function (d,i) { return d.obj.color })
+
   varLinks.exit()
     .remove()
   return varLinks;
 }
-HeapVisualization.varLinkLabels = function (varLinkLabelGroup, vizData) {
-  var varLinkLabels = varLinkLabelGroup.selectAll("text").data(vizData.variables, function (d) { return d.name});
-  varLinkLabels.enter()
-    .append("text")
-      .text(function (d) { return d.name + ": " + HeapVisualization.hexifyOid(d.oid) })
-      .style("fill", function (d,i) { console.log(JSON.stringify(d.obj)); return d.obj.color })
+HeapVisualization.varTableRows = function (varTable, vizData) {
+  var rows = varTable.selectAll("tr")
+    .data(vizData.variables, function (d) { return d.name });
+  rows.enter()
+    .append("tr");
+  rows.exit().remove()
 
-  varLinkLabels
-    .attr("x", 10)
-    .attr("y", function (d,i) { return 10 + (i * 20) })
+  var names = rows.selectAll("td.var-name").data(function (d) {
+    return [d.name]
+  })
+  names.enter()
+    .append("td").attr("class","var-name")
+  names
+    .text(String)
 
-  varLinkLabels.exit()
-    .remove()
-  return varLinkLabels;
+  var refs = rows.selectAll("td.var-ref").data(function (d) {
+    return [{
+      oid: HeapVisualization.hexifyOid(d.oid),
+      color: d.obj.color
+    }]
+  })
+  refs.enter()
+    .append("td").attr("class","var-ref")
+  refs
+    .text(function (d) { return d.oid +" |"})
+    .style("color", function (d) { return d.color });
+
+  return rows;
 }

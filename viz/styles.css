@@ -1,3 +1,35 @@
+* {box-sizing: border-box;}
+#var-table {
+  position:absolute;
+  left:10px;
+  top:10px;
+
+  font-family: Helvetica Neue;
+  font-weight: 300;
+  font-size: 16px;
+
+  border-spacing: 0;
+  border-collapse: separate;
+}
+#var-table > tbody > tr:first-child td {
+  /*padding-top:10px;*/
+}
+#var-table th {
+  text-align: left;
+  border-bottom: 2px solid #aaa;
+}
+#var-table td {
+  border-bottom: 1px solid #aaa;
+}
+.var-name {
+  min-width:150px;
+}
+.var-ref {
+  text-align:right;
+}
+#var-table tr {
+  height:28px;
+}
 line.link {
   fill: none;
   stroke: #000;
