@@ -21,9 +21,12 @@ Example:
 
 ```
 Heap Console Ready.
-> @greeting = Example::String.new("Hello")
-=> #<Example::String:0x007fbf7a1d9430 @string="Hello">
+>> @greeting = Example::String.new("Hello")
+>> @greetings = Example::Array.new
+>> @greetings << @greeting
 ```
+
+![Example Image](http://i.imgur.com/LfXh8iq.png)
 
 ##Cool Examples
 
