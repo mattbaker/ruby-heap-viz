@@ -44,10 +44,17 @@ HeapVisualization.scaleLinkTarget = function (link, r) {
   dy = (dy / l) * (l - r)
   return {x:link.source.x + dx, y:link.source.y + dy};
 }
-HeapVisualization.varLinkOrigin = function (i) {
-  var bbox = $("#var-table tbody tr")[i].getBoundingClientRect();
+HeapVisualization.idForVarName = function (name) {
+  return "var-row-"+name.replace("@","");
+}
+HeapVisualization.varLinkOrigin = function (name) {
+  var bbox = document
+    .getElementById(HeapVisualization.idForVarName(name))
+    .getBoundingClientRect();
   return {x:bbox.top + (bbox.height/2), y:bbox.right-3}
 }
+HeapVisualization.variableKeyFnc = function (d) { return d.name }
+HeapVisualization.nodeKeyFnc = function (d) { return d.oid }
 HeapVisualization.nodeData = function (objData) {
   objData.forEach(function (obj, i) {
     obj.color = HeapVisualization.colors(i);
@@ -150,10 +157,10 @@ HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels,
 
     var diag = d3.svg.diagonal()
       .projection(function (d) {return [d.y, d.x]})
-      .source(function (d,i) { return HeapVisualization.varLinkOrigin(i) })
+      .source(function (d,i) { return HeapVisualization.varLinkOrigin(d.name) })
       .target(function (d,i) {
         var link = {
-          source: HeapVisualization.varLinkOrigin(i),
+          source: HeapVisualization.varLinkOrigin(d.name),
           target: {x:d.obj.y, y:d.obj.x}
         };
         var scaledL = HeapVisualization.scaleLinkTarget(link, radius);
@@ -165,7 +172,7 @@ HeapVisualization.nextForceTick = function (force, radius, links, nodes, labels,
 HeapVisualization.nodes = function (nodeGroup, vizData, force, radius) {
   var node = nodeGroup
     .selectAll(".node")
-    .data(vizData.nodes, function(d) { return d.oid });
+    .data(vizData.nodes, HeapVisualization.nodeKeyFnc);
   node.enter()
     .append("circle")
     .attr("class", "node")
@@ -189,7 +196,7 @@ HeapVisualization.links = function (linkGroup, vizData) {
 }
 HeapVisualization.labels = function (labelGroup, vizData) {
   var label = labelGroup.selectAll("text")
-    .data(vizData.nodes, function (d) { return d.oid })
+    .data(vizData.nodes, HeapVisualization.nodeKeyFnc)
   label.enter()
     .append("text")
       .attr("text-anchor", "middle")
@@ -201,7 +208,7 @@ HeapVisualization.labels = function (labelGroup, vizData) {
 }
 HeapVisualization.varLinks = function (varLinkGroup, vizData) {
   var varLinks = varLinkGroup.selectAll("path")
-    .data(vizData.variables,function (d) { return d.name });
+    .data(vizData.variables, HeapVisualization.variableKeyFnc);
   varLinks.enter()
     .append("path")
 
@@ -214,9 +221,10 @@ HeapVisualization.varLinks = function (varLinkGroup, vizData) {
 }
 HeapVisualization.varTableRows = function (varTable, vizData) {
   var rows = varTable.selectAll("tr")
-    .data(vizData.variables, function (d) { return d.name });
+    .data(vizData.variables, HeapVisualization.variableKeyFnc);
   rows.enter()
-    .append("tr");
+    .append("tr")
+      .attr("id", function (d) { return HeapVisualization.idForVarName(d.name) })
   rows.exit().remove()
 
   var names = rows.selectAll("td.var-name").data(function (d) {
