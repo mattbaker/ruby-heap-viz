@@ -1,4 +1,5 @@
 * {box-sizing: border-box;}
+body {margin:0; padding:0;}
 #var-table {
   position:absolute;
   left:10px;
@@ -10,9 +11,6 @@
 
   border-spacing: 0;
   border-collapse: separate;
-}
-#var-table > tbody > tr:first-child td {
-  /*padding-top:10px;*/
 }
 #var-table th {
   text-align: left;

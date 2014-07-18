@@ -45,8 +45,8 @@ HeapVisualization.scaleLinkTarget = function (link, r) {
   return {x:link.source.x + dx, y:link.source.y + dy};
 }
 HeapVisualization.varLinkOrigin = function (i) {
-  //TODO(matt): should calculate this off the bounding box of the table element
-  return {x:44+(i*28), y:228}
+  var bbox = $("#var-table tbody tr")[i].getBoundingClientRect();
+  return {x:bbox.top + (bbox.height/2), y:bbox.right-3}
 }
 HeapVisualization.nodeData = function (objData) {
   objData.forEach(function (obj, i) {
