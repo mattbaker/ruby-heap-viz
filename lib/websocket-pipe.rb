@@ -33,4 +33,14 @@ class WebSocketPipe
       end
     end
   end
+
+  def self.fork!
+    ws_reader, ws_writer = IO.pipe
+    ws_pid = fork do
+      ws_writer.close
+      WebSocketPipe.new(ws_reader).start!
+    end
+    ws_reader.close
+    [ws_pid, ws_writer]
+  end
 end
