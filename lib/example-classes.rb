@@ -1,21 +1,12 @@
 module Example
-  class String
-    def initialize(str)
-      @string = str
-    end
+  class String < String; end
+  class Array < Array; end
+  class Hash < Hash; end
 
-    def method_missing(name, *args)
-      @string.send(name, *args)
-    end
-  end
-
-  class Array
-    def initialize
-      @elements = []
-    end
-
-    def method_missing(name, *args)
-      @elements.send(name, *args)
-    end
+  def self.classes
+    Example
+      .constants
+      .map { |constant_name| Example.const_get(constant_name) }
+      .select { |constant| constant.is_a? Class }
   end
 end

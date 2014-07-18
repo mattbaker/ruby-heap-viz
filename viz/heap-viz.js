@@ -56,8 +56,8 @@ HeapVisualization.linkData = function (objData) {
   objData.forEach(function(obj) { nodeMap[obj.oid] = obj });
 
   return links.concat.apply(links, objData.map(function (obj) {
-    return obj.references.map(function (ref) {
-      return {source:nodeMap[ref.oid], target:obj};
+    return obj.references.map(function (ref_oid) {
+      return {source:nodeMap[ref_oid], target:obj};
     });
   }));
 }
