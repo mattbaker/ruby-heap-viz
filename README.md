@@ -24,3 +24,13 @@ Heap Console Ready.
 > @greeting = Example::String.new("Hello")
 => #<Example::String:0x007fbf7a1d9430 @string="Hello">
 ```
+
+##Cool Examples
+
+Here are some examples to consider:
+
+ * Create an array and two objects, push those objects into the array to demonstrate references between objects
+ * Duplicate an array like the one above to demonstrate object duplication, as well as the fact that `#dup` is a "shallow copy"
+ * Add an object to an array, but do not assign a variable name to that object. This shows that objects can be in the object graph even if they're unnamed
+ * Create an orphaned object (e.g. add a string to an array, then `#pop` it) and call `GC.start` to demonstrate garbage collection
+
