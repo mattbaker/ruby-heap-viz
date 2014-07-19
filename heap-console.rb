@@ -20,6 +20,8 @@ trap("EXIT") do
 end
 
 require 'irb'
+require_relative 'lib/irb-patch'
+
 puts "Heap Console Ready."
 IRB.start
 

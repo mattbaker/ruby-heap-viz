@@ -6,6 +6,6 @@ IRB.conf[:PROMPT][:CUSTOM] = {
   :PROMPT_S => "%l>> ",
   :PROMPT_C => ".. ",
   :PROMPT_N => ".. ",
-  :RETURN => "=> %s\n"
+  :RETURN => ""
 }
 IRB.conf[:PROMPT_MODE] = :CUSTOM
