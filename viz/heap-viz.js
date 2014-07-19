@@ -109,7 +109,7 @@ HeapVisualization.vizData = function (nodeData, linkData, variableTable) {
   return {nodes:nodeData, links:linkData, variables: variableTable};
 }
 HeapVisualization.svg = function (width, height) {
-  var svg = d3.select("body").append("svg")
+  var svg = d3.select("body > svg")
     .attr("width", width)
     .attr("height", height);
 

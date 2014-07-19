@@ -4,6 +4,7 @@ body {margin:0; padding:0;}
   position:absolute;
   left:10px;
   top:10px;
+  z-index:-1;
 
   font-family: Helvetica Neue;
   font-weight: 300;
