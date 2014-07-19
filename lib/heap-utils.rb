@@ -57,7 +57,7 @@ module HeapUtils
       displayOid: Example.hexedOid(obj),
       references: references,
       klass: class_from_obj_name(obj.class.to_s),
-      value: obj.inspect,
+      value: obj.ref_inspect,
       names: names,
       orphan: names.empty? && references.empty?
     }

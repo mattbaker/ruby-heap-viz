@@ -1,14 +1,19 @@
 module Example
 
-  class String < String; end
+  class String < String;
+    def ref_inspect
+      inspect
+    end
+  end
+
   class Array < Array;
-    def inspect
+    def ref_inspect
       "[#{self.map{|o| Example.hexedOid(o)}.join(', ')}]"
     end
   end
 
   class Hash < Hash
-    def inspect
+    def ref_inspect
       "{#{self.map{|k,o| k.inspect + '=> '+Example.hexedOid(o)}.join(', ')}}"
     end
   end
