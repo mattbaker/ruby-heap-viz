@@ -57,7 +57,8 @@ module HeapUtils
       references: references,
       klass: class_from_obj_name(obj.class.to_s),
       value: obj.inspect,
-      names: names
+      names: names,
+      orphan: names.empty? && references.empty?
     }
   end
 

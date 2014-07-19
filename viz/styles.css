@@ -31,13 +31,13 @@ body {margin:0; padding:0;}
 line.link {
   fill: none;
   stroke: #000;
-  stroke-width: 1.5px;
+  stroke-width: 1px;
 }
 
 circle {
   fill: #fff;
-  stroke: #0c0;
-  stroke-width: 1px;
+  stroke: #000;
+  stroke-width: 1.5px;
 }
 
 text {
@@ -47,8 +47,8 @@ text {
   dominant-baseline: middle;
 }
 
-.sym-links path {
+.var-links path {
   fill:none;
-  stroke-with: 1px;
-  stroke: #00c;
+  stroke-width: 1px;
+  stroke: #000;
 }

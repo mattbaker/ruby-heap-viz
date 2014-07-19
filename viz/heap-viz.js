@@ -72,7 +72,7 @@ HeapVisualization.nodeData = function (objData) {
   var nodes = objData.map(function (obj,i) {
     var updatedNode = oldNodeMap[obj.oid];
     if (updatedNode) {
-      ['klass','names','references','value'].forEach(function (attr) {
+      ['klass','names','references','value', 'orphan'].forEach(function (attr) {
         updatedNode[attr] = obj[attr]
       })
     } else {
@@ -112,8 +112,7 @@ HeapVisualization.svg = function (width, height) {
     .attr("height", height);
 
   //Specific ordering for z-index
-  svg.append("g").attr("class", "sym-links");
-  svg.append("g").attr("class", "sym-link-labels");
+  svg.append("g").attr("class", "var-links");
   svg.append("g").attr("class", "links");
   svg.append("g").attr("class", "nodes");
   svg.append("g").attr("class", "labels");
@@ -146,7 +145,7 @@ HeapVisualization.labelGroup = function (svg) {
   return svg.select(".labels");
 }
 HeapVisualization.varLinkGroup = function (svg) {
-  return svg.select(".sym-links");
+  return svg.select(".var-links");
 }
 HeapVisualization.force = function (width, height, radius) {
   var force = d3.layout.force()
@@ -198,9 +197,10 @@ HeapVisualization.nodes = function (nodeGroup, vizData, force, radius) {
   node.enter()
     .append("circle")
     .attr("class", "node")
-    .style("stroke", function (d,i) { return d.color })
   node
     .attr("r", radius)
+    .style("stroke", function (d,i) { return d.orphan ? "#aaa" : d.color })
+    .style("stroke-dasharray", function (d,i) { return d.orphan ? "3,3" : "0" })
     .call(force.drag);
   node.exit()
     .remove()
