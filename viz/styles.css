@@ -11,6 +11,8 @@ body {margin:0; padding:0;}
 
   border-spacing: 0;
   border-collapse: separate;
+
+  background:white;
 }
 #var-table th {
   text-align: left;
@@ -30,14 +32,15 @@ body {margin:0; padding:0;}
 }
 line.link {
   fill: none;
-  stroke: #000;
-  stroke-width: 1px;
+  stroke: #777;
+  stroke-width: 1.5px;
 }
 
-circle {
+circle.node {
   fill: #fff;
   stroke: #000;
   stroke-width: 1.5px;
+  cursor:pointer;
 }
 
 text {
@@ -51,4 +54,22 @@ text {
   fill:none;
   stroke-width: 1px;
   stroke: #000;
+}
+.diminished {
+  stroke-opacity: 0.2;
+}
+.diminished-text {
+  fill-opacity: 0.2;
+}
+.arrow-marker-end {
+  fill: #777;
+}
+.arrow-marker-end-diminished {
+  fill:rgb(204, 204, 204);
+}
+.node-value {
+  visibility: hidden;
+  font-size: 14px;
+  font-family: Anonymous Pro, monospace;
+  font-weight: bold;
 }
