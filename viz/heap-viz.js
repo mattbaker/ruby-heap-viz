@@ -75,11 +75,9 @@ HeapVisualization.nodeData = function (objData) {
       ['klass','names','references','value'].forEach(function (attr) {
         updatedNode[attr] = obj[attr]
       })
-      console.log("Updated", updatedNode.oid, updatedNode.color)
     } else {
       updatedNode = obj;
       updatedNode.color = HeapVisualization.colors.shift();
-      console.log("Created", updatedNode.oid, updatedNode.color)
     }
     return updatedNode
   });
