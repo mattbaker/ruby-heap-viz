@@ -4,9 +4,9 @@ Ruby Heap Viz is an interactive Ruby Heap Visualization. Use IRB and watch how R
 
 ##Usage
 
-Start the heap viz REPL with `ruby heap-console.rb`. This will kick off a separate process for the websocket server, and start a thread locally that will periodically push the state of the heap to all websocket clients.
+Start the heap viz REPL with `ruby repl.rb`. This will kick off a separate process for the websocket server, and start a thread locally that will periodically push the state of the heap to all websocket clients.
 
-Open `viz/index.html`. It will connect to the websocket server and receive updates about the heap's state, then render the object graph with D3.
+Open `viz.html`. It will connect to the websocket server and receive updates about the heap's state, then render the object graph with D3.
 
 Two utility functions are available to you in IRB:
 
