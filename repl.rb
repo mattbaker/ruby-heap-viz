@@ -1,8 +1,10 @@
+require 'irb'
 require 'pp'
-require_relative 'lib/websocket-pipe'
-require_relative 'lib/example-classes'
-require_relative 'lib/heap-utils'
-require_relative 'lib/repl-utils'
+require_relative 'ruby-lib/irb-patch'
+require_relative 'ruby-lib/websocket-pipe'
+require_relative 'ruby-lib/example-classes'
+require_relative 'ruby-lib/heap-utils'
+require_relative 'ruby-lib/repl-utils'
 
 include HeapUtils
 include ReplUtils
@@ -19,9 +21,5 @@ trap("EXIT") do
   exit
 end
 
-require 'irb'
-require_relative 'lib/irb-patch'
-
 puts "Heap Console Ready."
 IRB.start
-
