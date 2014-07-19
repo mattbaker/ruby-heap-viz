@@ -231,6 +231,7 @@ HeapVisualization.nodes = function (nodeGroup, vizData, force, radius) {
     .style("stroke-dasharray", function (d,i) { return d.orphan ? "3,3" : "0" })
     .call(force.drag);
   node.exit()
+    .each(function (d) { HeapVisualization.colors.push(d.color); console.log(HeapVisualization.colors) }) //reclaim colors
     .remove()
   return node;
 }
