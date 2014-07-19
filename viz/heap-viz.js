@@ -259,7 +259,7 @@ HeapViz.nodeValuesGroup = function (svg) {
   return svg.select(".node-values");
 }
 HeapViz.nodeValues = function (nodeValuesGroup, vizData) {
-  var nodeValues = nodeValuesGroup.selectAll("path")
+  var nodeValues = nodeValuesGroup.selectAll("text")
     .data(vizData.nodes, HeapViz.nodeKeyFnc);
   nodeValues.enter()
     .append("text")
