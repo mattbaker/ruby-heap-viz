@@ -1,23 +1,27 @@
-#Heap Viz
+#Ruby Heap Viz
 
-An interactive Ruby Heap Visualization
+Ruby Heap Viz is an interactive Ruby Heap Visualization. Use IRB and watch how Ruby's object graph responds! This is intended to a) be fun and b) serve as a learning tool for people to learn about objects, references and garbage collection.
 
 ##Usage
 
 Start the heap viz REPL with `ruby heap-console.rb`. This will kick off a separate process for the websocket server, and start a thread locally that will periodically push the state of the heap to all websocket clients.
 
-Open `viz/index.html` to see the heap visualization.
+Open `viz/index.html`. It will connect to the websocket server and receive updates about the heap's state, then render the object graph with D3.
 
-Two utility functions are available to you in the repl:
+Two utility functions are available to you in IRB:
 
- * `example!` - creates three example objects
+ * `example!` - creates an example scenario, including variables, object references, and a garbage-collectable object
  * `reset!` - unsets all instance variables and starts GC. This will not cleanup objects referenced by local variables.
 
-Currently the heap state code requires you to use classes under a specific namespace. `Example::Array`, `Example::String` and others are just aliases for the correspending Ruby classes.You can add your own classes under the namspace too!
+Currently the heap state code requires you to use classes under a specific namespace. `Example::Array`, `Example::String` and others are just aliases for the corresponding Ruby classes. You can add your own classes under the namspace too!
 
 It's suggested that you use instance variables at the REPL. Local variables (due to scope constraints) will neither show up in the variable table nor will they be cleared in a `reset!`.
 
-Example:
+##Simplifications
+
+You'll notice the visualization uses Ruby's object ids as if they're actual pointers. Traversal of the object graph in Ruby is more complicated than this, but this is a useful metaphor for students who must understand that setting `x = y` copies `y`'s reference into `x`. People that need a deeper and more accurate visualization of Ruby's memory model should probably look elsewhere.
+
+##Example:
 
 ```
 Heap Console Ready.
@@ -28,7 +32,7 @@ Heap Console Ready.
 
 ![Example Image](http://i.imgur.com/LfXh8iq.png)
 
-##Cool Examples
+##Cool Scenarios
 
 Here are some examples to consider:
 
@@ -37,3 +41,4 @@ Here are some examples to consider:
  * Add an object to an array, but do not assign a variable name to that object. This shows that objects can be in the object graph even if they're unnamed
  * Create an orphaned object (e.g. add a string to an array, then `#pop` it) and call `GC.start` to demonstrate garbage collection
 
+Have others? Submit a PR!
