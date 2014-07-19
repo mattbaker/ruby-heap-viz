@@ -6,9 +6,9 @@ function HeapVisualization() {
   this.height = $R.state(500);
 
   //Connect it up
-  var nodeData = $R(HeapVisualization.nodeData).bindTo(this.objData);
-  var linkData = $R(HeapVisualization.linkData).bindTo(this.objData);
-  var variableTable = $R(HeapVisualization.variableTable).bindTo(this.objData);
+  var nodeData = $R(HeapVisualization.nodeData, this).bindTo(this.objData);
+  var linkData = $R(HeapVisualization.linkData).bindTo(nodeData);
+  var variableTable = $R(HeapVisualization.variableTable).bindTo(nodeData);
   var vizData = $R(HeapVisualization.vizData).bindTo(nodeData, linkData, variableTable);
 
   var svg = $R(HeapVisualization.svg).bindTo(this.width, this.height);
@@ -31,7 +31,14 @@ function HeapVisualization() {
 
   var nextForceTick = $R(HeapVisualization.nextForceTick).bindTo(force, this.radius, links, nodes, labels, varLinks)
 }
-HeapVisualization.colors = d3.scale.category10();
+HeapVisualization.colors = [
+  "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+  "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+  "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c",
+  "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5",
+  "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f",
+  "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"
+];
 
 HeapVisualization.hexifyOid = function (oid) {
   return "0x"+oid.toString(16).substring(7);
@@ -53,18 +60,35 @@ HeapVisualization.varLinkOrigin = function (name) {
     .getBoundingClientRect();
   return {x:bbox.top + (bbox.height/2), y:bbox.right-3}
 }
+HeapVisualization.objMap = function (objs) {
+  var map = {};
+  objs.forEach(function (obj) { map[obj.oid] = obj });
+  return map;
+}
 HeapVisualization.variableKeyFnc = function (d) { return d.name }
 HeapVisualization.nodeKeyFnc = function (d) { return d.oid }
 HeapVisualization.nodeData = function (objData) {
-  objData.forEach(function (obj, i) {
-    obj.color = HeapVisualization.colors(i);
+  var oldNodeMap = HeapVisualization.objMap(this.oldNodeDataCache || []);
+  var nodes = objData.map(function (obj,i) {
+    var updatedNode = oldNodeMap[obj.oid];
+    if (updatedNode) {
+      ['klass','names','references','value'].forEach(function (attr) {
+        updatedNode[attr] = obj[attr]
+      })
+      console.log("Updated", updatedNode.oid, updatedNode.color)
+    } else {
+      updatedNode = obj;
+      updatedNode.color = HeapVisualization.colors.shift();
+      console.log("Created", updatedNode.oid, updatedNode.color)
+    }
+    return updatedNode
   });
-  return objData;
+  this.oldNodeDataCache = nodes;
+  return nodes;
 }
 HeapVisualization.linkData = function (objData) {
-  var nodeMap = {};
+  var nodeMap = HeapVisualization.objMap(objData)
   var links = []
-  objData.forEach(function(obj) { nodeMap[obj.oid] = obj });
 
   return links.concat.apply(links, objData.map(function (obj) {
     return obj.references.map(function (ref_oid) {
