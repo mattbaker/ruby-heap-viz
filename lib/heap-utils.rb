@@ -54,6 +54,7 @@ module HeapUtils
   def heap_state_entry(obj, names, references)
     {
       oid: obj.object_id,
+      displayOid: Example.hexedOid(obj),
       references: references,
       klass: class_from_obj_name(obj.class.to_s),
       value: obj.inspect,

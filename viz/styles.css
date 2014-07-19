@@ -31,13 +31,13 @@ body {margin:0; padding:0;}
 #var-table tr {
   height:28px;
 }
-line.link {
+.ref-link {
   fill: none;
   stroke: #777;
   stroke-width: 1.5px;
 }
 
-circle.node {
+.node {
   fill: #fff;
   stroke: #000;
   stroke-width: 1.5px;
