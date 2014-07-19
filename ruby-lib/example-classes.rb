@@ -1,25 +1,33 @@
 module Example
 
-  class String < String;
+  module HexOid
+    def hex_oid
+      "0x#{self.object_id.to_s(16)[7..-1]}"
+    end
+  end
+
+  class String < String
+    include HexOid
+
     def ref_inspect
       inspect
     end
   end
 
-  class Array < Array;
+  class Array < Array
+    include HexOid
+
     def ref_inspect
-      "[#{self.map{|o| Example.hexedOid(o)}.join(', ')}]"
+      "[#{self.map(&:hex_oid).join(', ')}]"
     end
   end
 
   class Hash < Hash
-    def ref_inspect
-      "{#{self.map{|k,o| k.inspect + '=> '+Example.hexedOid(o)}.join(', ')}}"
-    end
-  end
+    include HexOid
 
-  def self.hexedOid(o)
-    "0x#{o.object_id.to_s(16)[7..-1]}"
+    def ref_inspect
+      "{#{self.map{|k,o| k.inspect + '=> '+o.hex_oid}.join(', ')}}"
+    end
   end
 
   def self.classes

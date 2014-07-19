@@ -54,9 +54,9 @@ module HeapUtils
   def heap_state_entry(obj, names, references)
     {
       oid: obj.object_id,
-      displayOid: Example.hexedOid(obj),
+      displayOid: obj.hex_oid,
       references: references,
-      klass: class_from_obj_name(obj.class.to_s),
+      klass: obj.class.name.split('::').last,
       value: obj.ref_inspect,
       names: names,
       orphan: names.empty? && references.empty?
@@ -65,13 +65,5 @@ module HeapUtils
 
   def within_namespace?(obj)
     obj.class.to_s.start_with? "#{HeapUtils::NAMESPACE}::"
-  end
-
-  def class_from_obj_name(name)
-    name[/#{HeapUtils::NAMESPACE.to_s}::([^#]*)/,1]
-  end
-
-  def id_from_obj_name(name)
-    name[/#{HeapUtils::NAMESPACE.to_s}::.*#(.*)/,1].to_i
   end
 end
