@@ -13,7 +13,7 @@ Two utility functions are available to you in the repl:
  * `example!` - creates three example objects
  * `reset!` - unsets all instance variables and starts GC. This will not cleanup objects referenced by local variables.
 
-Currently the heap state code requires you to use classes under a specific namespace. Two classes are available, `Example::String` and `Example::Array`. They behave just like `String` and `Array`. You can add your own classes under the namspace too!
+Currently the heap state code requires you to use classes under a specific namespace. `Example::Array`, `Example::String` and others are just aliases for the correspending Ruby classes.You can add your own classes under the namspace too!
 
 It's suggested that you use instance variables at the REPL. Local variables (due to scope constraints) will neither show up in the variable table nor will they be cleared in a `reset!`.
 
