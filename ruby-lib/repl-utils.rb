@@ -19,4 +19,13 @@ module ReplUtils
     instance_variables.each {|v| remove_instance_variable(v)}
     GC.start
   end
+
+  def viz!
+    open_is_present = system('command -v open >/dev/null 2>&1')
+    if open_is_present
+      system('open viz.html')
+    else
+      puts "The `open` executable cannot be found in your PATH"
+    end
+  end
 end
