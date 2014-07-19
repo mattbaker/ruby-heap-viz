@@ -1,4 +1,4 @@
-function HeapVisualization() {
+function HeapViz() {
   //Public graph properties
   this.objData = $R.state();
   this.radius = $R.state(40);
@@ -6,36 +6,36 @@ function HeapVisualization() {
   this.height = $R.state(640);
 
   //Connect it up
-  var nodeData = $R(HeapVisualization.nodeData, this).bindTo(this.objData);
-  var refLinkData = $R(HeapVisualization.refLinkData).bindTo(nodeData);
-  var variableTableData = $R(HeapVisualization.variableTableData).bindTo(nodeData);
-  var vizData = $R(HeapVisualization.vizData).bindTo(nodeData, refLinkData, variableTableData);
+  var nodeData = $R(HeapViz.nodeData, this).bindTo(this.objData);
+  var refLinkData = $R(HeapViz.refLinkData).bindTo(nodeData);
+  var variableTableData = $R(HeapViz.variableTableData).bindTo(nodeData);
+  var vizData = $R(HeapViz.vizData).bindTo(nodeData, refLinkData, variableTableData);
 
-  var svg = $R(HeapVisualization.svg).bindTo(this.width, this.height);
+  var svg = $R(HeapViz.svg).bindTo(this.width, this.height);
 
-  var refLinkGroup = $R(HeapVisualization.refLinkGroup).bindTo(svg);
-  var nodeGroup = $R(HeapVisualization.nodeGroup).bindTo(svg);
-  var labelGroup = $R(HeapVisualization.labelGroup).bindTo(svg);
-  var varLinkGroup = $R(HeapVisualization.varLinkGroup).bindTo(svg);
-  var nodeValuesGroup = $R(HeapVisualization.nodeValuesGroup).bindTo(svg);
+  var refLinkGroup = $R(HeapViz.refLinkGroup).bindTo(svg);
+  var nodeGroup = $R(HeapViz.nodeGroup).bindTo(svg);
+  var labelGroup = $R(HeapViz.labelGroup).bindTo(svg);
+  var varLinkGroup = $R(HeapViz.varLinkGroup).bindTo(svg);
+  var nodeValuesGroup = $R(HeapViz.nodeValuesGroup).bindTo(svg);
 
-  var varTable = $R(HeapVisualization.varTable);
-  var varTableRows = $R(HeapVisualization.varTableRows).bindTo(varTable, vizData);
+  var varTable = $R(HeapViz.varTable);
+  var varTableRows = $R(HeapViz.varTableRows).bindTo(varTable, vizData);
 
-  var force = $R(HeapVisualization.force).bindTo(this.width, this.height, this.radius);
-  var forceState = $R(HeapVisualization.forceState).bindTo(force, vizData);
+  var force = $R(HeapViz.force).bindTo(this.width, this.height, this.radius);
+  var forceState = $R(HeapViz.forceState).bindTo(force, vizData);
 
-  var nodes = $R(HeapVisualization.nodes).bindTo(nodeGroup, vizData, force, this.radius);
-  var refLinks = $R(HeapVisualization.refLinks).bindTo(refLinkGroup, vizData);
-  var labels = $R(HeapVisualization.labels).bindTo(labelGroup, vizData);
-  var varLinks = $R(HeapVisualization.varLinks).bindTo(varLinkGroup, vizData);
-  var nodeValues = $R(HeapVisualization.nodeValues).bindTo(nodeValuesGroup, vizData);
+  var nodes = $R(HeapViz.nodes).bindTo(nodeGroup, vizData, force, this.radius);
+  var refLinks = $R(HeapViz.refLinks).bindTo(refLinkGroup, vizData);
+  var labels = $R(HeapViz.labels).bindTo(labelGroup, vizData);
+  var varLinks = $R(HeapViz.varLinks).bindTo(varLinkGroup, vizData);
+  var nodeValues = $R(HeapViz.nodeValues).bindTo(nodeValuesGroup, vizData);
 
-  var nextForceTick = $R(HeapVisualization.nextForceTick).bindTo(force, this.radius, refLinks, nodes, labels, varLinks, nodeValues)
+  var nextForceTick = $R(HeapViz.nextForceTick).bindTo(force, this.radius, refLinks, nodes, labels, varLinks, nodeValues)
 }
 
 //Util
-HeapVisualization.colors = [
+HeapViz.colors = [
   "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
   "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
   "#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c",
@@ -44,7 +44,7 @@ HeapVisualization.colors = [
   "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"
 ];
 
-HeapVisualization.scaleLinkTarget = function (link, r) {
+HeapViz.scaleLinkTarget = function (link, r) {
   var dx = link.target.x - link.source.x;
   var dy = link.target.y - link.source.y;
   var l = Math.sqrt(dx * dx + dy * dy)
@@ -52,21 +52,21 @@ HeapVisualization.scaleLinkTarget = function (link, r) {
   dy = (dy / l) * (l - r)
   return {x:link.source.x + dx, y:link.source.y + dy};
 }
-HeapVisualization.idForVarName = function (name) {
+HeapViz.idForVarName = function (name) {
   return "var-row-"+name.replace("@","");
 }
-HeapVisualization.varLinkOrigin = function (name) {
+HeapViz.varLinkOrigin = function (name) {
   var bbox = document
-    .getElementById(HeapVisualization.idForVarName(name))
+    .getElementById(HeapViz.idForVarName(name))
     .getBoundingClientRect();
   return {x:bbox.top + (bbox.height/2), y:bbox.right-3}
 }
-HeapVisualization.objMap = function (objs) {
+HeapViz.objMap = function (objs) {
   var map = {};
   objs.forEach(function (obj) { map[obj.oid] = obj });
   return map;
 }
-HeapVisualization.highlight = function (d) {
+HeapViz.highlight = function (d) {
   var oidSelector = '[data-oid="'+d.oid+'"]';
   var oidFilter = ':not('+oidSelector+')';
   d3.selectAll('.node,.var-link,.ref-link').filter(oidFilter).classed('diminished',true);
@@ -74,18 +74,18 @@ HeapVisualization.highlight = function (d) {
   d3.selectAll('.ref-link').filter(oidFilter).attr("marker-end","url(#end-diminished)");
   d3.selectAll('.node-value').filter(oidSelector).style('visibility', 'visible');
 }
-HeapVisualization.clearHighlight = function (d) {
+HeapViz.clearHighlight = function (d) {
   d3.selectAll(".node,.var-link,.ref-link").classed('diminished', false)
   d3.selectAll(".ref-link").attr("marker-end","url(#end)")
   d3.selectAll(".node-label").classed("diminished-text",false)
   d3.selectAll('.node-value[data-oid="'+d.oid+'"]').style('visibility', 'hidden')
 }
-HeapVisualization.variableKeyFnc = function (d) { return d.name }
-HeapVisualization.nodeKeyFnc = function (d) { return d.oid }
-HeapVisualization.nodeData = function (objData) {
+HeapViz.variableKeyFnc = function (d) { return d.name }
+HeapViz.nodeKeyFnc = function (d) { return d.oid }
+HeapViz.nodeData = function (objData) {
 
 //Reactive Functions
-  var oldNodeMap = HeapVisualization.objMap(this.oldNodeDataCache || []);
+  var oldNodeMap = HeapViz.objMap(this.oldNodeDataCache || []);
   var nodes = objData.map(function (obj,i) {
     var updatedNode = oldNodeMap[obj.oid];
     if (updatedNode) {
@@ -94,15 +94,15 @@ HeapVisualization.nodeData = function (objData) {
       })
     } else {
       updatedNode = obj;
-      updatedNode.color = HeapVisualization.colors.shift();
+      updatedNode.color = HeapViz.colors.shift();
     }
     return updatedNode
   });
   this.oldNodeDataCache = nodes;
   return nodes;
 }
-HeapVisualization.refLinkData = function (objData) {
-  var nodeMap = HeapVisualization.objMap(objData)
+HeapViz.refLinkData = function (objData) {
+  var nodeMap = HeapViz.objMap(objData)
   var refLinks = []
 
   return refLinks.concat.apply(refLinks, objData.map(function (obj) {
@@ -111,7 +111,7 @@ HeapVisualization.refLinkData = function (objData) {
     });
   }));
 }
-HeapVisualization.variableTableData = function (objData) {
+HeapViz.variableTableData = function (objData) {
   var vars = [];
   objData.forEach(function (obj) {
     vars = vars.concat(obj.names.map(function (name) {
@@ -121,10 +121,10 @@ HeapVisualization.variableTableData = function (objData) {
   return vars;
 }
 
-HeapVisualization.vizData = function (nodeData, refLinkData, variableTableData) {
+HeapViz.vizData = function (nodeData, refLinkData, variableTableData) {
   return {nodes:nodeData, refLinks:refLinkData, variables: variableTableData};
 }
-HeapVisualization.svg = function (width, height) {
+HeapViz.svg = function (width, height) {
   var svg = d3.select("body > svg")
     .attr("width", width)
     .attr("height", height);
@@ -152,15 +152,15 @@ HeapVisualization.svg = function (width, height) {
   return svg;
 }
 
-HeapVisualization.varTable = function () {
+HeapViz.varTable = function () {
   return d3.select("#var-table tbody");
 }
-HeapVisualization.varTableRows = function (varTable, vizData) {
+HeapViz.varTableRows = function (varTable, vizData) {
   var rows = varTable.selectAll("tr")
-    .data(vizData.variables, HeapVisualization.variableKeyFnc);
+    .data(vizData.variables, HeapViz.variableKeyFnc);
   rows.enter()
     .append("tr")
-      .attr("id", function (d) { return HeapVisualization.idForVarName(d.name) })
+      .attr("id", function (d) { return HeapViz.idForVarName(d.name) })
   rows.exit().remove()
 
   var names = rows.selectAll("td.var-name").data(function (d) { return [d.name] })
@@ -181,7 +181,7 @@ HeapVisualization.varTableRows = function (varTable, vizData) {
   return rows;
 }
 
-HeapVisualization.force = function (width, height, radius) {
+HeapViz.force = function (width, height, radius) {
   var force = d3.layout.force()
     .friction(0.5)
     .chargeDistance(500)
@@ -190,19 +190,19 @@ HeapVisualization.force = function (width, height, radius) {
     .size([width+100, height-100]);
   return force;
 }
-HeapVisualization.forceState = function (force, vizData) {
+HeapViz.forceState = function (force, vizData) {
   force
     .nodes(vizData.nodes)
     .links(vizData.refLinks)
     .start();
 }
-HeapVisualization.nextForceTick = function (force, radius, refLinks, nodes, labels, varLinks, nodeValues) {
+HeapViz.nextForceTick = function (force, radius, refLinks, nodes, labels, varLinks, nodeValues) {
   force.on("tick", function() {
     refLinks
       .attr("x1", function(d) { return d.source.x; })
       .attr("y1", function(d) { return d.source.y; })
-      .attr("x2", function(d) { return HeapVisualization.scaleLinkTarget(d,radius).x })
-      .attr("y2", function(d) { return HeapVisualization.scaleLinkTarget(d,radius).y });
+      .attr("x2", function(d) { return HeapViz.scaleLinkTarget(d,radius).x })
+      .attr("y2", function(d) { return HeapViz.scaleLinkTarget(d,radius).y });
 
     nodes
       .attr("cx", function(d) { return d.x; })
@@ -218,49 +218,49 @@ HeapVisualization.nextForceTick = function (force, radius, refLinks, nodes, labe
 
     var diag = d3.svg.diagonal()
       .projection(function (d) {return [d.y, d.x]})
-      .source(function (d,i) { return HeapVisualization.varLinkOrigin(d.name) })
+      .source(function (d,i) { return HeapViz.varLinkOrigin(d.name) })
       .target(function (d,i) {
         var link = {
-          source: HeapVisualization.varLinkOrigin(d.name),
+          source: HeapViz.varLinkOrigin(d.name),
           target: {x:d.obj.y, y:d.obj.x}
         };
-        var scaledL = HeapVisualization.scaleLinkTarget(link, radius);
+        var scaledL = HeapViz.scaleLinkTarget(link, radius);
         return {x:scaledL.x, y:scaledL.y}
       })
     varLinks.attr("d", diag);
   });
 }
 
-HeapVisualization.nodeGroup = function (svg) {
+HeapViz.nodeGroup = function (svg) {
   return svg.select(".nodes");
 }
-HeapVisualization.nodes = function (nodeGroup, vizData, force, radius) {
+HeapViz.nodes = function (nodeGroup, vizData, force, radius) {
   var node = nodeGroup
     .selectAll(".node")
-    .data(vizData.nodes, HeapVisualization.nodeKeyFnc);
+    .data(vizData.nodes, HeapViz.nodeKeyFnc);
   node.enter()
     .append("circle")
     .attr("data-oid", function (d) { return d.oid })
     .attr("class", "node")
-    .on('mouseover', HeapVisualization.highlight)
-    .on('mouseout', HeapVisualization.clearHighlight);
+    .on('mouseover', HeapViz.highlight)
+    .on('mouseout', HeapViz.clearHighlight);
   node
     .attr("r", radius)
     .style("stroke", function (d,i) { return d.orphan ? "#aaa" : d.color })
     .style("stroke-dasharray", function (d,i) { return d.orphan ? "3,3" : "0" })
     .call(force.drag);
   node.exit()
-    .each(function (d) { HeapVisualization.colors.push(d.color); }) //reclaim colors
+    .each(function (d) { HeapViz.colors.push(d.color); }) //reclaim colors
     .remove()
   return node;
 }
 
-HeapVisualization.nodeValuesGroup = function (svg) {
+HeapViz.nodeValuesGroup = function (svg) {
   return svg.select(".node-values");
 }
-HeapVisualization.nodeValues = function (nodeValuesGroup, vizData) {
+HeapViz.nodeValues = function (nodeValuesGroup, vizData) {
   var nodeValues = nodeValuesGroup.selectAll("path")
-    .data(vizData.nodes, HeapVisualization.nodeKeyFnc);
+    .data(vizData.nodes, HeapViz.nodeKeyFnc);
   nodeValues.enter()
     .append("text")
       .attr("data-oid", function (d) { return d.oid })
@@ -275,10 +275,10 @@ HeapVisualization.nodeValues = function (nodeValuesGroup, vizData) {
 }
 
 
-HeapVisualization.refLinkGroup = function (svg) {
+HeapViz.refLinkGroup = function (svg) {
   return svg.select(".ref-links");
 }
-HeapVisualization.refLinks = function (refLinkGroup, vizData) {
+HeapViz.refLinks = function (refLinkGroup, vizData) {
   var refLink = refLinkGroup.selectAll(".ref-link").data(vizData.refLinks);
   refLink.enter()
     .append("line")
@@ -290,12 +290,12 @@ HeapVisualization.refLinks = function (refLinkGroup, vizData) {
   return refLink;
 }
 
-HeapVisualization.labelGroup = function (svg) {
+HeapViz.labelGroup = function (svg) {
   return svg.select(".labels");
 }
-HeapVisualization.labels = function (labelGroup, vizData) {
+HeapViz.labels = function (labelGroup, vizData) {
   var label = labelGroup.selectAll("text")
-    .data(vizData.nodes, HeapVisualization.nodeKeyFnc)
+    .data(vizData.nodes, HeapViz.nodeKeyFnc)
   label.enter()
     .append("text")
       .attr("data-oid", function (d) { return d.oid })
@@ -308,12 +308,12 @@ HeapVisualization.labels = function (labelGroup, vizData) {
   return label;
 }
 
-HeapVisualization.varLinkGroup = function (svg) {
+HeapViz.varLinkGroup = function (svg) {
   return svg.select(".var-links");
 }
-HeapVisualization.varLinks = function (varLinkGroup, vizData) {
+HeapViz.varLinks = function (varLinkGroup, vizData) {
   var varLinks = varLinkGroup.selectAll("path")
-    .data(vizData.variables, HeapVisualization.variableKeyFnc);
+    .data(vizData.variables, HeapViz.variableKeyFnc);
   varLinks.enter()
     .append("path")
     .attr("class", "var-link")

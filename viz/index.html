@@ -22,7 +22,7 @@
 
   <script>
   $(function ()  {
-    window.viz = new HeapVisualization();
+    var viz = new HeapViz();
     var socket = new WebSocket('ws://localhost:8080');
 
     socket.onmessage = function(event) {
