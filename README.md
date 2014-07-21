@@ -2,7 +2,7 @@
 
 Ruby Heap Viz is an interactive Ruby Heap Visualization. Use IRB and watch how Ruby's object graph responds! This is intended to a) be fun and b) serve as a learning tool for people to learn about objects, references and garbage collection.
 
-##Depdendencies
+##Dependendencies
 
 Ruby Heap Viz requires [`websocket-pipe`](https://github.com/mattbaker/websocket-pipe).
 
