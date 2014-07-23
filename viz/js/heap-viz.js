@@ -89,7 +89,7 @@ HeapViz.nodeData = function (objData) {
   var nodes = objData.map(function (obj,i) {
     var updatedNode = oldNodeMap[obj.oid];
     if (updatedNode) {
-      ['klass','names','references','value', 'orphan'].forEach(function (attr) {
+      ['klass','names','inboundReferences','value', 'orphan'].forEach(function (attr) {
         updatedNode[attr] = obj[attr]
       })
     } else {
@@ -106,7 +106,7 @@ HeapViz.refLinkData = function (objData) {
   var refLinks = []
 
   return refLinks.concat.apply(refLinks, objData.map(function (obj) {
-    return obj.references.map(function (ref_oid) {
+    return obj.inboundReferences.map(function (ref_oid) {
       return {source:nodeMap[ref_oid], target:obj};
     });
   }));

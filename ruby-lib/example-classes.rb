@@ -18,7 +18,14 @@ module Example
     include HexOid
 
     def ref_inspect
-      "[#{self.map(&:hex_oid).join(', ')}]"
+      #We have to ensure nothing retains a ref to this object
+      str = "["
+      self.each_with_index do |el, i|
+        str << el.hex_oid
+        str << ", " unless el == self.last
+      end
+      str << "]"
+      str
     end
   end
 

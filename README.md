@@ -17,6 +17,7 @@ Some utility functions are available to you in IRB:
  * `example!` - creates an example scenario, including variables, object references, and a garbage-collectable object
  * `reset!` - unsets all instance variables and starts GC. This will not cleanup objects referenced by local variables.
  * `viz!` - opens `viz.html` in your browser if [`open(1)`](https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/open.1.html) if present
+ * `graph_report` - generates a list of objects retaining references to any objects in the `Example` namespace. Useful for debugging GC issues.
 
 Currently the heap state code requires you to use classes under a specific namespace. `Example::Array`, `Example::String` and others are just aliases for the corresponding Ruby classes. You can add your own classes under the namspace too!
 

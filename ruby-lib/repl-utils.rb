@@ -28,4 +28,16 @@ module ReplUtils
       puts "The `open` executable cannot be found in your PATH"
     end
   end
+
+  def graph_report
+    ObjectSpace.each_object do |obj|
+      next if obj.object_id == self.object_id
+      ObjectSpace.reachable_objects_from(obj).each do |ref|
+        if ref.class.to_s.start_with?(ObjectNode::NAMESPACE.to_s)
+          puts "#{obj.class}##{obj.object_id} retains a reference to #{ref.class}##{ref.object_id}"
+        end
+      end
+    end
+    nil
+  end
 end
