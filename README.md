@@ -2,7 +2,7 @@
 
 Ruby Heap Viz is an interactive Ruby Heap Visualization. Use IRB and watch how Ruby's object graph responds! This is intended to a) be fun and b) serve as a learning tool for people to learn about objects, references and garbage collection.
 
-##Depdendencies
+##Dependendencies
 
 Ruby Heap Viz requires [`websocket-pipe`](https://github.com/mattbaker/websocket-pipe).
 
@@ -25,7 +25,7 @@ It's suggested that you use instance variables at the REPL. Local variables (due
 
 ##Simplifications
 
-You'll notice the visualization uses Ruby's object ids as if they're actual pointers. Traversal of the object graph in Ruby is more complicated than this, but this is a useful metaphor for students who must understand that setting `x = y` copies `y`'s reference into `x`. People that need a deeper and more accurate visualization of Ruby's memory model should probably look elsewhere.
+You'll notice the visualization uses Ruby's object ids as if they're actual pointers. Traversal of the object graph in Ruby is more complicated than this, but this is a useful metaphor to understand that setting `x = y` copies `y`'s reference into `x`. People that need a deeper and more accurate visualization of Ruby's memory model should probably look elsewhere.
 
 ##Example:
 
