@@ -36,7 +36,10 @@ Heap Console Ready.
 >> @greetings << @greeting
 ```
 
-![Example Image](http://i.imgur.com/LfXh8iq.png)
+![Example GIF](doc-resources/ex.gif)
+
+A longer video with annotations can be found [here](https://vimeo.com/103154278).
+
 
 ##Cool Scenarios
 
