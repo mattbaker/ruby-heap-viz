@@ -1,6 +1,8 @@
 #Ruby Heap Viz
 
-Ruby Heap Viz is an interactive Ruby Heap Visualization. Use IRB and watch how Ruby's object graph responds! This is intended to a) be fun and b) serve as a learning tool for people to learn about objects, references and garbage collection.
+Ruby Heap Viz is an interactive Ruby object graph visualization. Use IRB and watch how Ruby's object graph responds! This is intended to a) be fun and b) serve as a learning tool for people to learn about objects, references and garbage collection. 
+
+This visualization is used at [Dev Bootcamp](http://devbootcamp.com/) during our unit on Ruby and its memory model.
 
 ##Dependendencies
 
