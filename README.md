@@ -10,7 +10,9 @@ Ruby Heap Viz requires [`websocket-pipe`](https://github.com/mattbaker/websocket
 
 ##Usage
 
-Start the heap viz REPL with `ruby repl.rb`. This will kick off a separate process for the websocket server, and start a thread locally that will periodically push the state of the heap to all websocket clients.
+Run `bundle install`.
+
+Start the heap viz REPL (IRB) with `ruby repl.rb`. This will kick off a separate process for the websocket server, and start a thread locally that will periodically push the state of the heap to all websocket clients.
 
 Call `viz!` in the REPL or open `viz.html`. It will connect to the websocket server and receive updates about the heap's state, then render the object graph with D3.
 
