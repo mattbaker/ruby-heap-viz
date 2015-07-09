@@ -22,7 +22,7 @@ module Example
       str = "["
       self.each_with_index do |el, i|
         str << el.hex_oid
-        str << ", " unless el == self.last
+        str << ", " unless i == self.length - 1
       end
       str << "]"
       str
