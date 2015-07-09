@@ -8,6 +8,8 @@ This visualization is used at [Dev Bootcamp](http://devbootcamp.com/) during our
 
 Ruby Heap Viz requires [`websocket-pipe`](https://github.com/mattbaker/websocket-pipe).
 
+Currently the Viz runs correctly with **ruby 2.0**, specifically **2.0.0-p645**. Later versions work, but introduce some odd bugs. Until this issue is fixed, please be aware of the versioning issue.
+
 ##Usage
 
 Run `bundle install`.
